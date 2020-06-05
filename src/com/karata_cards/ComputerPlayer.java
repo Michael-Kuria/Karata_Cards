@@ -56,7 +56,7 @@ public class ComputerPlayer extends Player {
             int b = findByRank(13);
 
             if(b != -1){
-                for(int j = b; j < count; j ++){
+                for(int j = b ; j < count; j ++){
                     if((hand[j].suit == c.suit && hand[j].rank == 13) ||hand[j].rank == 13 ) {
                         list.addLast(j);
                         break;
@@ -88,7 +88,7 @@ public class ComputerPlayer extends Player {
 
                 // add any remaining 8 or Q
                 for(int i = count - 1; i >= 0; i -- ){
-                    if(c.rank == hand[i].rank && list.getLast() != i){
+                    if(c.rank == hand[i].rank && !checkIfPicked(list,i)){
                         list.addLast(i);
                     }
                 }
@@ -157,13 +157,25 @@ public class ComputerPlayer extends Player {
     }
 
 
+    public boolean checkIfPicked(LinkedList<Integer> l, int a){
+
+        for(Integer i: l){
+            if(a == i){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 
 
     @Override
     public Card place(Card c) {
         sort();
 
-        if(c.rank == 2 || c.rank == 3){
+       /* if(c.rank == 2 || c.rank == 3){
             int a = this.findByRank(c.rank);
 
             if(a == -1){
@@ -177,7 +189,7 @@ public class ComputerPlayer extends Player {
             return place(a);
         }
 
-        /*if(c.rank == 11){
+        *//*if(c.rank == 11){
             int a = this.findByRank(c.rank);
 
             if(a == -1){
@@ -185,7 +197,7 @@ public class ComputerPlayer extends Player {
             }
 
             return place(a);
-        }*/
+        }*//*
 
 
         int a = findByRank(c.rank);
@@ -202,7 +214,7 @@ public class ComputerPlayer extends Player {
         }
 
 
-        pick();
+        pick();*/
         return null;
     }
 

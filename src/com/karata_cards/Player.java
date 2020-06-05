@@ -27,6 +27,7 @@ public abstract class Player {
         }
 
         hand[count] = deck.deal();
+        System.out.println(this +" : has picked  " + hand[count]);
         count ++;
         sort();
     }
@@ -58,7 +59,7 @@ public abstract class Player {
         Card card = null;
         if(index < count){
             card = new Card(hand[index]);
-            move(index);
+            //move(index);
             count --;
 
         }
@@ -81,7 +82,7 @@ public abstract class Player {
 
             if(arr[i] < count){
                 cards[j] = new Card(hand[arr[i]]);
-                move(arr[i]);
+                move(arr,arr[i]);
                 j ++;
             }
         }
@@ -95,12 +96,19 @@ public abstract class Player {
      * Keep the cards in-order
      * @param index
      */
-    public void move(int index){
-        hand[index] = null;
+    public void move(int [] arr, int index){
 
         for(int i = index; i < count - 1; i ++){
             hand[i] = hand[i + 1];
+
         }
+
+        for(int i = index; i < arr.length; i ++){
+            if(arr[i] > arr[index]){
+                arr[i] --;
+            }
+        }
+
         hand[count --] = null;
     }
 
@@ -142,7 +150,7 @@ public abstract class Player {
      */
     public void sort(){
 
-        System.out.println(this  +": ");
+        System.out.print(this  +": Cards at hand " + count +" >>> ");
         printHand();
         for(int i = 0; i < count; i ++){
 

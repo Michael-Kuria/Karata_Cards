@@ -49,6 +49,10 @@ public class Deck {
      * @return the card on top
      */
     public Card deal(){
+        if(cards.isEmpty()){
+            Game.getGame().updateDeck();
+        }
+
         return cards.poll();
     }
 
@@ -83,6 +87,9 @@ public class Deck {
 
         for(int j = 0; j < i; j ++){
 
+            if(arr[j] == null){
+                System.out.println(j +" is null during shuffling >>>>>>>>>>>>>>");
+            }
             cards.offer(arr[j]);
         }
     }

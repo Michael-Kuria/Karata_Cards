@@ -42,12 +42,16 @@ public class Game {
 
     public void start(){
 
-        Card c = initializeGame();
-        System.out.println("First Card : " + c );
+        initializeGame();
+        Card c = table.getFirst();
+
+        System.out.println("First Card : " + c);
+
 
         while(on){
 
             int index = 0;
+
             for(Player p : players){
                 Card[] card = p.place(c,escape);
 
@@ -141,8 +145,9 @@ public class Game {
      * placing a starting card on the table
      *
      */
-    public Card initializeGame(){
+    public void initializeGame(){
 
+        System.out.println("Table size: " + table.size() +" Deck size: " + deck.cards.size());
         for(int i = 0; i < 3; i ++){
 
             for(Player p : players){
@@ -151,14 +156,14 @@ public class Game {
         }
 
         // avoid having a special card at the top
-        if(specialCardForOpponent(deck.deck.cards.peek())){
+        Card c = deck.deal();
+        while(!specialCardForOpponent(c)){
+            deck.cards.add(c);
             deck.shuffle();
+            c = deck.deal();
         }
 
-        Card c = deck.deal();
         table.add(c);
-        return c;
-
     }
 
     /**
@@ -205,7 +210,8 @@ public class Game {
      * If the deck size is less than 5 then transfer all the cards on the table except the first on the deck
      */
     public void updateDeck(){
-        if(deck.cards.size() < 5){
+        if(deck.cards.size() < 10){
+            System.out.println("Table size: " + table.size() +" Deck size: " + deck.cards.size());
             Card c = table.removeFirst();
 
             for(Card card: table){
@@ -305,16 +311,22 @@ public class Game {
 
 
     public static void main(String [] args){
-        Game game = new Game();
 
-        for(int i = 1; i < 4; i ++ ){
-            game.addPlayer(new ComputerPlayer(i +" "));
-        }
 
-        game.start();
-        game.declareWinner();
-        System.out.println("Table " + game.table.size());
-        System.out.println("Deck " + game.deck.cards.size());
+
+        //for(int i = 0; i < 100; i ++){
+            //System.out.println( i + "================================================================================================================================");
+            Game game = new Game();
+
+            for(int j = 1; j < 4; j ++ ){
+                game.addPlayer(new ComputerPlayer(j +" "));
+            }
+
+            game.start();
+            game.declareWinner();
+            System.out.println("Table " + game.table.size());
+            System.out.println("Deck " + game.deck.cards.size());
+            //System.out.println( "=============================================================================================================================");
 
     }
 
