@@ -1,7 +1,6 @@
 package com.karata_cards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.LinkedList;
 
 public class ComputerPlayer extends Player {
@@ -103,38 +102,39 @@ public class ComputerPlayer extends Player {
                     }
                 }
 
-            }else{
+            }else {
 
-                int i;
-                // Find a card with similar Suit
-                for(i = count - 1; i >= 0; i --){
+                // Find a card with similar Rank as ca
+                b = findByRank(c.rank);
 
-                    if(c.suit == hand[i].suit){
-                        list.addLast(i);
-                        int j = i - 1;
-
-                        for(;j >= 0; j --){
-                            if(hand[i].rank == hand[j].rank){
-                                list.addLast(j);
-                            }
+                if (b != -1) {
+                    for (int i = b; i < count; i++) {
+                        if (hand[i].rank == c.rank) {
+                            list.addLast(i);
                         }
-                        break;
                     }
+
+                } else {
+
+                    // Find a card with similar Suit as ca
+                    for (int i = count - 1; i >= 0; i--) {
+
+                        if (c.suit == hand[i].suit) {
+                            list.addLast(i);
+                            int j = i - 1;
+
+                            for (; j >= 0; j--) { // should also check j +===>
+                                if (hand[i].rank == hand[j].rank) {
+                                    list.addLast(j);
+                                }
+                            }
+                            break;
+                        }
+                    }
+
                 }
 
-                //Find a card with similar rank
-                /*if(!list.isEmpty()){
-                    c = new Card(hand[list.getLast()]);
-                    for(;i - 1  >= 0; i --){
-                        if(hand[i].rank == c.rank){
-                            System.out.println(">>>>>>>>>>>>>>>>>>>>> BEFORE C = " + c);
-                            list.addLast(i);
-                            System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>." +hand[i] +" c = " + c);
-                        }
-                    }
-                }*/
             }
-
             // if after searching Card has been found request a card using the available Ace
             if(list.isEmpty()){
                 for(int i = 0; i < 4 && i < count; i ++){
@@ -150,10 +150,8 @@ public class ComputerPlayer extends Player {
                 int j = 0;
                 for(Integer i : list){
 
-                    //if(i < count){
-                        x[j] = i;
-                        j ++;
-                    //}
+                    x[j] = i;
+                    j ++;
                 }
 
             }
@@ -167,6 +165,13 @@ public class ComputerPlayer extends Player {
     }
 
 
+    /**
+     * Avoid picking a card twice
+     *
+     * @param l list containing cards already picked
+     * @param a the card to be picked
+     * @return True if it's OK and False otherwise
+     */
     public boolean checkIfPicked(LinkedList<Integer> l, int a){
 
         for(Integer i: l){

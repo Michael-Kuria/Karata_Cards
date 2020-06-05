@@ -3,6 +3,9 @@ package com.karata_cards;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+/**
+ * Handles creation of a deck, shuffling the cards and dealing cards to the player
+ */
 public class Deck {
 
     public Queue<Card> cards;
@@ -87,14 +90,24 @@ public class Deck {
 
         for(int j = 0; j < i; j ++){
 
-            if(arr[j] == null){
+            /*if(arr[j] == null){
                 System.out.println(j +" is null during shuffling >>>>>>>>>>>>>>");
-            }
+            }*/
             cards.offer(arr[j]);
         }
     }
 
+    /**
+     * Get the size of the available cards on the deck
+     *
+     * @return size of deck
+     */
+    public int getSize(){
 
+        return cards.size();
+    }
+
+    //Testing the Deck class
     /*public static void main(String [] args){
 
         Deck deck = Deck.getDeck();

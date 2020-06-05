@@ -27,7 +27,6 @@ public abstract class Player {
         }
 
         hand[count] = deck.deal();
-        System.out.println(this +" : has picked  " + hand[count]);
         count ++;
         sort();
     }
@@ -93,21 +92,25 @@ public abstract class Player {
 
 
     /**
-     * Keep the cards in-order
-     * @param index
+     * If a card is to be placed in the table ensure that it is removed from the arr
+     *
+     * @param arr The array consisting the all indices of the hand that are to be placed on the table
+     * @param index The index that needs to be removed
      */
     public void move(int [] arr, int index){
-
-        for(int i = index; i < count - 1; i ++){
-            hand[i] = hand[i + 1];
-
-        }
 
         for(int i = index; i < arr.length; i ++){
             if(arr[i] > arr[index]){
                 arr[i] --;
             }
         }
+
+        for(int i = index; i < count - 1; i ++){
+            hand[i] = hand[i + 1];
+
+        }
+
+
 
         hand[count --] = null;
     }
@@ -133,10 +136,11 @@ public abstract class Player {
             }else{
                 h = mid - 1;
             }
-            //System.out.println(1);
+
         }
         return ans;
     }
+
 
     public void updateState(){
         if(count == 0){
@@ -146,12 +150,10 @@ public abstract class Player {
     }
 
     /**
-     * Sort the cards in hand
+     * Sort the cards at hand
      */
     public void sort(){
 
-        System.out.print(this  +": Cards at hand " + count +" >>> ");
-        printHand();
         for(int i = 0; i < count; i ++){
 
             for(int j = count - 1; j > i; j --){
@@ -166,20 +168,24 @@ public abstract class Player {
     }
 
     /**
-     * print the cards at hand
+     *
+     * @return a String representation of the cards at hand
      */
-    public void printHand(){
-        System.out.print("{ ");
+    public String printHand(){
+
+        String str = "{";
+
         for(int i = 0; i < count; i ++){
-            System.out.print(hand[i]);
+            str += hand[i] +", ";
         }
-        System.out.println(" }");
+        str += "}";
+
+        return str;
 
     }
 
     public abstract Card place(Card c);
     public abstract Card[] place(Card c,int escape);
-    //public abstract void play(Card c);
 
     @Override
     public String toString(){

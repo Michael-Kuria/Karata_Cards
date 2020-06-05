@@ -3,7 +3,6 @@ package com.karata_cards;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Game {
 
@@ -66,8 +65,8 @@ public class Game {
                     } else if(c.rank == 11 && escape == 1){
                         System.out.println(p +": --------> has been Jumped");
                     }else{
-                        System.out.println(p +": --------> was unable to play ");
                         p.pick();
+                        System.out.println(p +": --------> was unable to play " + p.printHand());
                     }
 
                     if(escape == 1){
@@ -75,7 +74,7 @@ public class Game {
                     }
 
                 }else{
-                    String prt = p +": ";
+                    String prt = p +": Played ----> ";
                     for(Card card1: card){
                         if(card1 != null)
                             table.addFirst(card1);
@@ -151,7 +150,7 @@ public class Game {
      */
     public void initializeGame(){
 
-        System.out.println("Table size: " + table.size() +" Deck size: " + deck.cards.size());
+        System.out.println("Table size: " + table.size() +" Deck size: " + deck.getSize());
         for(int i = 0; i < 3; i ++){
 
             for(Player p : players){
@@ -159,9 +158,13 @@ public class Game {
             }
         }
 
+        for(Player p : players){
+            System.out.println(p +": Cards at hand "+ p.printHand());
+        }
+
         // avoid having a special card at the top
         Card c = deck.deal();
-        while(!specialCardForOpponent(c)){
+        while(specialCardForOpponent(c)){
             deck.cards.add(c);
             deck.shuffle();
             c = deck.deal();
@@ -204,7 +207,7 @@ public class Game {
 
     public boolean specialCardForOpponent(Card c){
 
-        if(c.rank == 2 || c.rank == 3 || c.rank == 11 || c.rank == 12){
+        if(c.rank <= 3 || c.rank >= 11){
             return true;
         }
         return false;
@@ -235,7 +238,7 @@ public class Game {
      */
     public void declareWinner(){
         for(Player p: players){
-            p.printHand();
+            System.out.println(p.printHand());
             if(p.state == State.WINNER){
                 System.out.println(p.name +" is the winner");
             }
@@ -316,21 +319,16 @@ public class Game {
 
     public static void main(String [] args){
 
+        Game game = new Game();
 
+        for(int j = 1; j < 4; j ++ ){
+            game.addPlayer(new ComputerPlayer(j +" "));
+        }
 
-        //for(int i = 0; i < 100; i ++){
-            //System.out.println( i + "================================================================================================================================");
-            Game game = new Game();
-
-            for(int j = 1; j < 4; j ++ ){
-                game.addPlayer(new ComputerPlayer(j +" "));
-            }
-
-            game.start();
-            game.declareWinner();
-            System.out.println("Table " + game.table.size());
-            System.out.println("Deck " + game.deck.cards.size());
-            //System.out.println( "=============================================================================================================================");
+        game.start();
+        System.out.println();
+        System.out.println("Table " + game.table.size());
+        System.out.println("Deck " + game.deck.getSize());
 
     }
 
