@@ -135,6 +135,16 @@ public class ComputerPlayer extends Player {
                 }*/
             }
 
+            // if after searching Card has been found request a card using the available Ace
+            if(list.isEmpty()){
+                for(int i = 0; i < 4 && i < count; i ++){
+                    if(hand[i].rank == 1){
+                        list.addLast(i);
+                        break;
+                    }
+                }
+            }
+
             if(!list.isEmpty()){
                 x = new int[list.size()];
                 int j = 0;

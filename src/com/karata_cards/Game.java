@@ -62,7 +62,11 @@ public class Game {
 
                     }else if((c.rank == 2 || c.rank == 3) && escape == 1){
                         p.pick(c.rank);
-                    } else if(c.rank != 11 || (escape == 0 && c.rank == 11)){
+                        System.out.println(p + ": --------> has picked " +c.rank);
+                    } else if(c.rank == 11 && escape == 1){
+                        System.out.println(p +": --------> has been Jumped");
+                    }else{
+                        System.out.println(p +": --------> was unable to play ");
                         p.pick();
                     }
 
@@ -173,7 +177,7 @@ public class Game {
      */
     public boolean specialCard(Card c){
 
-        return c.rank == 2 || c.rank == 3;
+        return c.rank == 2 || c.rank == 3|| c.rank == 11 || c.rank == 12;
 
     }
 
