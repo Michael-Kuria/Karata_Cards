@@ -58,6 +58,8 @@ public class Game {
 
                     if(c.rank == 12 && escape == 1){
                         reversePlayers(index);
+                        escape = 0;
+                        break;
 
                     }else if((c.rank == 2 || c.rank == 3) && escape == 1){
                         p.pick(c.rank);
@@ -83,6 +85,9 @@ public class Game {
                         prt += card1 +" ";
 
                     }
+                    if(card.length > 1){
+                        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< >=2 CARDS ALERT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                    }
 
 
                     p.updateState();
@@ -92,12 +97,21 @@ public class Game {
                         on = false;
                     }
 
+                    if(escape == 1 && card[0].rank == 12 && c.rank == 12){
+                        escape = 0;
+                        c = table.getFirst();
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+prt + " with " + p.count +" Cards " + escape);
+                        continue;
+                    }
+
                     c = table.getFirst();
 
 
                     if(c != null && specialCard(c)){
                         escape = 1;
                     }
+
+
                     System.out.println(prt + " with " + p.count +" Cards " + escape);
 
                 }
@@ -185,23 +199,39 @@ public class Game {
     }
 
     /**
-     * Incases of a Kickback reverse the players list
+     * Incase of a Kickback reverse the players list
+     *
+     * Kickback has it's effect only when there are more than 2 players
      */
     public void reversePlayers(int i){
+        // i - 1 should be the last person to be added
         ArrayList<Player> newList = new ArrayList<>();
+        int n = players.size();
 
-        if(i > 0){
-            for(int j = i - 1; j >= 0; j --){
-                newList.add(players.get(j));
+        if(n > 2){
+
+            if(i  == 0){
+                for(int j = n - 2; j >= 0; j --){
+                    newList.add(players.get(j));
+                }
+                newList.add(players.get(n - 1));
+
+            }else {
+
+                for(int j = i - 2; j >= 0; j --){
+                    newList.add(players.get(j));
+                }
+
+                for(int j = n - 1; j >= i - 1; j -- ){
+                    newList.add(players.get(j));
+                }
+
             }
 
-        }
 
-        for(int j = players.size() - 1; j >= i; j -- ){
-            newList.add(players.get(j));
+            System.out.println("Game reversed ");
+            players = newList;
         }
-        System.out.println("Game reversed ");
-        players = newList;
 
     }
 

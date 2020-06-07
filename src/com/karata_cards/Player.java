@@ -81,7 +81,7 @@ public abstract class Player {
 
             if(arr[i] < count){
                 cards[j] = new Card(hand[arr[i]]);
-                move(arr,arr[i]);
+                move(arr,i);
                 j ++;
             }
         }
@@ -95,7 +95,7 @@ public abstract class Player {
      * If a card is to be placed in the table ensure that it is removed from the arr
      *
      * @param arr The array consisting the all indices of the hand that are to be placed on the table
-     * @param index The index that needs to be removed
+     * @param index The index that needs to be removed, in arr.
      */
     public void move(int [] arr, int index){
 
@@ -105,7 +105,7 @@ public abstract class Player {
             }
         }
 
-        for(int i = index; i < count - 1; i ++){
+        for(int i = arr[index]; i < count - 1; i ++){
             hand[i] = hand[i + 1];
 
         }

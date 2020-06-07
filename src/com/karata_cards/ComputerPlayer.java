@@ -39,7 +39,7 @@ public class ComputerPlayer extends Player {
                 a = this.findByRank(12);
             }
 
-            Game.getGame().escape = 0;
+            //Game.getGame().escape = 0;
             if(a == -1){
                 return null;
             }
@@ -56,7 +56,7 @@ public class ComputerPlayer extends Player {
 
             if(b != -1){
                 for(int j = b ; j < count; j ++){
-                    if((hand[j].suit == c.suit && hand[j].rank == 13) ||hand[j].rank == 13 ) {
+                    if((hand[j].suit == c.suit && hand[j].rank == 13) || (hand[j].rank == 13 && c.rank == 13)) {
                         list.addLast(j);
                         break;
                     }
@@ -70,7 +70,7 @@ public class ComputerPlayer extends Player {
 
                     if(b != -1){
                         for(int j = b; j < count; j ++){
-                            if((hand[j].suit == c.suit && hand[j].rank == 8) || hand[j].rank == 8) {
+                            if((hand[j].suit == c.suit && hand[j].rank == 8) || (hand[j].rank == 8 && c.rank == 8)) {
                                 list.addLast(j);
                                 break;
                             }
@@ -119,11 +119,30 @@ public class ComputerPlayer extends Player {
                     // Find a card with similar Suit as ca
                     for (int i = count - 1; i >= 0; i--) {
 
+
+
                         if (c.suit == hand[i].suit) {
+                            if(hand[i].rank == 11){
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+
+                            }
+
                             list.addLast(i);
+                            int k = i + 1;
+
+                            for(;k < count; k ++){
+                                if (hand[i].rank == hand[k].rank) {
+                                    list.addLast(k);
+                                }
+                            }
+
                             int j = i - 1;
 
-                            for (; j >= 0; j--) { // should also check j +===>
+                            for (; j >= 0; j--) {
                                 if (hand[i].rank == hand[j].rank) {
                                     list.addLast(j);
                                 }
