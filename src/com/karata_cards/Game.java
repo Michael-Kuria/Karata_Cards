@@ -1,6 +1,7 @@
 package com.karata_cards;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -21,6 +22,10 @@ public class Game {
         on = true;
 
     }
+
+    /*private Game(ArrayList<Player> players){
+
+    }*/
 
     /**
      * singleton Game class
@@ -52,9 +57,9 @@ public class Game {
             int index = 0;
 
             for(Player p : players){
-                Card[] card = p.place(c,escape);
+                Card[] cards = p.place(c,escape);
 
-                if(card == null){
+                if(cards == null){
 
                     if(c.rank == 12 && escape == 1){
                         reversePlayers(index);
@@ -76,17 +81,19 @@ public class Game {
                     }
 
                 }else{
-                    String prt = p +": Played ----> ";
-                    for(Card card1: card){
-                        if(card1 != null)
-                            table.addFirst(card1);
-                        else
-                            System.out.println(p + " >>>>>>>>>>>>>>>>>>>>>>>>>>>> played with a null value " + p.count);
-                        prt += card1 +" ";
 
-                    }
-                    if(card.length > 1){
-                        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< >=2 CARDS ALERT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                    if(validate(cards,c)){
+                        printCardsPlayed(p,cards);
+
+                        for(Card card: cards)
+                            table.addFirst(card);
+
+                    }else{
+                        System.out.println(p+": has played wrongly");
+                        p.addToHand(cards);
+                        p.pick();
+                        continue;
+
                     }
 
 
@@ -97,22 +104,19 @@ public class Game {
                         on = false;
                     }
 
-                    if(escape == 1 && card[0].rank == 12 && c.rank == 12){
+                    if(escape == 1 && cards[0].rank == 12 && c.rank == 12){
                         escape = 0;
                         c = table.getFirst();
-                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+prt + " with " + p.count +" Cards " + escape);
                         continue;
                     }
 
                     c = table.getFirst();
 
 
-                    if(c != null && specialCard(c)){
+                    if(c != null && requiresAReaction(c)){
                         escape = 1;
                     }
 
-
-                    System.out.println(prt + " with " + p.count +" Cards " + escape);
 
                 }
 
@@ -125,35 +129,9 @@ public class Game {
                 updateDeck();
 
                 index ++;
-                //System.out.println(deck.cards.size());
             }
         }
 
-      /*  while(on){
-            for(Player p: players){
-
-                Card card = p.place(c);
-                if(card != null){
-
-
-                    table.add(card);
-                    System.out.println(p +" : " + card);
-                    p.updateState();
-
-                    if(p.state == State.WINNER){
-                        on = false;
-                    }
-
-                    c = card;
-                }
-
-                if(!on){
-                    declareWinner();
-                    return;
-                }
-                updateDeck();
-            }
-        }*/
 
     }
 
@@ -178,7 +156,7 @@ public class Game {
 
         // avoid having a special card at the top
         Card c = deck.deal();
-        while(specialCardForOpponent(c)){
+        while(!isAWinningCard(c)){
             deck.cards.add(c);
             deck.shuffle();
             c = deck.deal();
@@ -187,21 +165,207 @@ public class Game {
         table.add(c);
     }
 
+
     /**
-     * Check if c is a special card i.e {Q,J,K,A,8}
-     * @param c
+     * Restart the game
+     */
+    private void restart(){
+        game = null;
+        deck = null;
+        game = Game.getGame();
+
+        game.start();
+
+    }
+
+
+
+    /**
+     * Check if the player has played correctly according to the game rules i.e if at all he has placed a card on the table
+     *
+     * @param cards the set of cards that the player has placed on the table, this can never be null
+     * @param c the card that was already on the table.
+     *
+     * @return true if the player has played safely
+     */
+
+    public boolean validate(Card[] cards, Card c){
+
+        /**
+         * Rules that  I need to take care of:
+         * -> if c is a reaction card expect a cards as response to that action
+         * -> Otherwise the following rules will apply:
+         *      - cards[0] should have rank similar to that of c or the suit should be similar, if not card[0] should be an ace
+         *      - if cards[0] is a question card it aught to be followed by an answer
+         *      - if cards.length is greater than one then cards[1] -> cards[cards.length - 1] should of the same rank, if cards[0] is
+         *      a questions then it can be followed by another question card of similar rank or suit, then an answer.
+         *
+         */
+        int n = cards.length;
+        boolean isAce;
+        // Checking cards that require reaction
+        if(requiresAReaction(c) && escape == 1){
+
+            if(c.rank == 2 || c.rank == 3){
+
+                isAce = checkRank(1,cards);
+
+                if(!isAce){
+                    return checkRank(c.rank, cards);
+                }
+            }
+
+            return checkRank(c.rank, cards);
+        }
+
+
+
+        isAce = checkRank(1, cards[0]);
+
+        // an ace can be placed regardless of the suit of rank on of {@Param c}
+        if(isAce){
+            // the entire cards should contain aces
+            return checkRank(1, cards);
+
+        }else{
+
+            if(c.rank == cards[0].rank){
+
+                if(isAQuestion(cards[0])){
+                    return checkQuestion(cards);
+                }else{
+                    return checkRank(c.rank, cards);
+                }
+            }else{
+                // the suit should be the same
+                if(c.suit == cards[0].suit){
+
+                    if(isAQuestion(cards[0])){
+                        return checkQuestion(cards);
+                    }else {
+                        return checkRank(cards[0].rank, cards);
+                    }
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+
+    /**
+     * A subroutine that is called by validate to ensure that the {@code cards} have the same rank
+     * @param rank the expected rank
+     * @param cards an array of cards that need to be checked
+     * @return True if they are equal and false otherwise
+     */
+    public boolean checkRank(int rank, Card ... cards){
+        int n = cards.length;
+
+        for(int i = 0; i < n; i ++){
+            if(rank != cards[i].rank)
+                return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * A subroutine to be called by validate when cards[0] is a question.
+     *
+     * @param cards an array containing cards that need to be checked
+     * @return True if rules have been followed and False otherwise
+     */
+    public boolean checkQuestion(Card ... cards){
+        int n = cards.length;
+
+        for(int i = 1; i < n; i ++){
+
+            Card prevCard = cards[i - 1]; // previous card
+            Card curr = cards[i]; // current card
+
+            if(isAQuestion(curr)){
+
+                if(curr.rank == prevCard.rank)
+                    continue;
+                else{
+
+                    if(curr.suit == prevCard.suit)
+                        continue;
+                    else
+                        return false;
+                }
+
+            }else{
+
+                if(isAQuestion(prevCard)){
+                    if(curr.suit == prevCard.suit) {
+                        continue;
+                    }else{
+                        return false;
+                    }
+                }else {
+
+                    if(prevCard.rank != curr.rank)
+                        return false;
+                }
+
+            }
+
+
+        }
+        return true;
+
+
+    }
+
+
+
+
+    /**
+     *  {J,K,2,3} are sets of cards that an opponent will have to react.
+     *
+     * @param c Card that we are whether it is a reaction Card
      * @return true if it's special and false otherwise
      */
-    public boolean specialCard(Card c){
+    public boolean requiresAReaction(Card c){
 
         return c.rank == 2 || c.rank == 3|| c.rank == 11 || c.rank == 12;
 
     }
 
     /**
-     * Incase of a Kickback reverse the players list
+     * {8 and Q} are question cards that will require an answer
+     * @param c
+     * @return true if it's a question card and false otherwise
      *
+     */
+    public boolean isAQuestion(Card c){
+
+        return c.rank == 8 || c.rank == 13;
+
+    }
+
+    /**
+     * The set of cards that exclude a questionCard and a Card that requires a reaction are the winning cards.
+     *
+     * This function will be called when verifying if a player has won
+     * @param c
+     * @return True if it can win and false otherwise
+     */
+    public boolean isAWinningCard(Card c){
+
+        return !requiresAReaction(c) && !isAQuestion(c) && !(c.rank == 1);
+
+    }
+
+
+    /**
+     * In case of a Kickback(K) reverse the players list.
      * Kickback has it's effect only when there are more than 2 players
+     *
+     * @param i is the index of the player who was intended to play
      */
     public void reversePlayers(int i){
         // i - 1 should be the last person to be added
@@ -235,18 +399,13 @@ public class Game {
 
     }
 
-    public boolean specialCardForOpponent(Card c){
-
-        if(c.rank <= 3 || c.rank >= 11){
-            return true;
-        }
-        return false;
-    }
-
     /**
      * If the deck size is less than 5 then transfer all the cards on the table except the first on the deck
      */
     public void updateDeck(){
+        if(deck.getSize() == 0 && table.size() < 3){
+
+        }
         if(deck.cards.size() < 10){
             System.out.println("Table size: " + table.size() +" Deck size: " + deck.cards.size());
             Card c = table.removeFirst();
@@ -277,73 +436,29 @@ public class Game {
     }
 
     /**
-     * Check if the player has played correctly according to the game rules i.e if at all he has placed a card on the table
+     * Neatly print the cards that a player has played
      *
-     * @param p The player who just played
-     * @param cards the cards that he has place on top
-     * @param card the card that was on top before the player played
-     * @return true if the player has played safely
+     * @param p the player that has played
+     * @param cards the cards played by {@param P}
      */
-
-    public boolean validate(Player p, Card[] cards, Card card){
-
-        if(card.rank == 1){
-            // request a card
-        }
-
-        // refuse to be jumped J
-        if(card.rank == 11 && cards[0].rank != 11){
-            return false;
-
-        }
-
-        // Refuse to deal 2
-        if((card.rank == 2 ) && cards[0].rank > 2 ){
-            return false;
-        }
-
-        // refuse to deal 3
-        if(card.rank == 3 && (cards[0].rank != 1 || cards[0].rank != 3)){
-            return false;
-        }
-
-        // Check to see if the value/ the flower match
-        if(cards[0].suit != card.suit && cards[0].value != card.value){
-            return false;
-        }
-
-
+    public void printCardsPlayed(Player p, Card [] cards){
         int n = cards.length;
 
-        // if the player has played an 8 check to confirm that he has placed an extra card
-        if(cards[0].rank == 8 || cards[0].rank == 13){
-            if(n < 2){
-                return false;
+        System.out.print(p + " : has played - [ ");
+
+        for(int i = 0; i < n; i ++){
+
+            if(i < n - 1){
+                System.out.print(cards[i] +", ");
+            }else{
+                System.out.print(cards[i]);
             }
-
-            if(cards[1].rank == cards[0].rank){
-                if(cards[n - 1].suit != cards[n - 2].suit && cards[n - 1].rank != cards[n - 2].rank ){
-                    return false;
-                }
-            }
-
         }
-
-
-
-        for(int i = 1; i < n; i ++){
-
-            //if(cards[i - 1].)
-        }
-
-        return true;
+        System.out.println(" ]");
 
     }
 
 
-    public boolean validate2(Player p, Card[] cards, Card card){
-        return true;
-    }
 
 
 

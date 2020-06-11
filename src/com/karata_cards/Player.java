@@ -141,6 +141,18 @@ public abstract class Player {
         return ans;
     }
 
+    /***
+     * This function will be called when the player has violated the rules of the game
+     * all the cards that he has placed on the table will be returned to him
+     * @param cards cards placed on the table
+     */
+    public void addToHand(Card [] cards){
+        for(Card c : cards){
+            hand[count] = c;
+            count ++;
+        }
+    }
+
 
     public void updateState(){
         if(count == 0){
