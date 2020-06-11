@@ -5,7 +5,7 @@ public abstract class Player {
 
     public Card [] hand; // cards at hand
     public String name;
-    public int count = 0;
+    public int count;
     public State state;
 
 
@@ -15,6 +15,11 @@ public abstract class Player {
         this.name = name;
         hand = new Card[50];
         state = State.PlAYING;
+        count = 0;
+    }
+
+    public Player(Player p){
+        this(p.name);
     }
 
 
@@ -154,13 +159,6 @@ public abstract class Player {
     }
 
 
-    public void updateState(){
-        if(count == 0){
-            state = State.WINNER;
-        }
-
-    }
-
     /**
      * Sort the cards at hand
      */
@@ -179,22 +177,6 @@ public abstract class Player {
         }
     }
 
-    /**
-     *
-     * @return a String representation of the cards at hand
-     */
-    public String printHand(){
-
-        String str = "{";
-
-        for(int i = 0; i < count; i ++){
-            str += hand[i] +", ";
-        }
-        str += "}";
-
-        return str;
-
-    }
 
     public abstract Card place(Card c);
     public abstract Card[] place(Card c,int escape);

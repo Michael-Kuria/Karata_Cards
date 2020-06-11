@@ -1,9 +1,8 @@
 package com.karata_cards;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Game {
 
@@ -44,19 +43,30 @@ public class Game {
         players.add(player);
     }
 
+    /**
+     * Add a list of players
+     * @param p list of players to be added
+     */
+    public void addAllPlayer(List<Player> p){
+        players.addAll(p);
+    }
+
     public void start(){
 
         initializeGame();
         Card c = table.getFirst();
 
         System.out.println("First Card : " + c);
+        System.out.println("Number of players =" + players.size());
+        boolean playersAreAvailable = players.size() > 1;
 
 
-        while(on){
+        while(on && playersAreAvailable){
 
-            int index = 0;
+            int index = 0; // used during reversing the game
 
             for(Player p : players){
+
                 Card[] cards = p.place(c,escape);
 
                 if(cards == null){
@@ -73,7 +83,7 @@ public class Game {
                         System.out.println(p +": --------> has been Jumped");
                     }else{
                         p.pick();
-                        System.out.println(p +": --------> was unable to play " + p.printHand());
+                        System.out.println(p +": ---> was unable to play " + Card.revealCards(p.count,p.hand));
                     }
 
                     if(escape == 1){
@@ -82,29 +92,46 @@ public class Game {
 
                 }else{
 
+                    // If validation fails, the player will receive all the cards back and a penalty of one card
+                    int n = cards.length;
+
                     if(validate(cards,c)){
-                        printCardsPlayed(p,cards);
+
+
+                        System.out.println(p +" : has played " + Card.revealCards(n,cards));
 
                         for(Card card: cards)
                             table.addFirst(card);
 
+
+
+                        // if cards[0] is a question then it should be followed by an answer, if none is provided then the player should pick an extra card
+                        if(isAQuestion(cards[0]) && isAQuestion(cards[n - 1])){
+                            p.pick();
+                        }
+
+
+                        // update player's state
+                        updatePlayerState(p,cards[n - 1]);
+
+
+                        if(escape == 1 && requiresAReaction(c)){
+                            escape = 0;
+                        }else if(requiresAReaction(cards[n - 1])){
+                            escape = 1;
+                        }
+
+                        // update the card on top
+                        c = table.getFirst();
+
                     }else{
-                        System.out.println(p+": has played wrongly");
+                        System.out.println(p +" : (played wrongly) had played " + Card.revealCards(n,cards));
                         p.addToHand(cards);
                         p.pick();
                         continue;
 
                     }
-
-
-                    p.updateState();
-
-                    if(p.state == State.WINNER){
-
-                        on = false;
-                    }
-
-                    if(escape == 1 && cards[0].rank == 12 && c.rank == 12){
+                    /*if(escape == 1 && cards[0].rank == 12 && c.rank == 12){
                         escape = 0;
                         c = table.getFirst();
                         continue;
@@ -115,8 +142,7 @@ public class Game {
 
                     if(c != null && requiresAReaction(c)){
                         escape = 1;
-                    }
-
+                    }*/
 
                 }
 
@@ -143,7 +169,9 @@ public class Game {
     public void initializeGame(){
 
         System.out.println("Table size: " + table.size() +" Deck size: " + deck.getSize());
-        for(int i = 0; i < 3; i ++){
+        int n = 3; // cards each player will have
+
+        for(int i = 0; i < n; i ++){
 
             for(Player p : players){
                 p.pick();
@@ -151,7 +179,7 @@ public class Game {
         }
 
         for(Player p : players){
-            System.out.println(p +": Cards at hand "+ p.printHand());
+            System.out.println(p +" : begins with " + Card.revealCards(n,p.hand));
         }
 
         // avoid having a special card at the top
@@ -169,10 +197,42 @@ public class Game {
     /**
      * Restart the game
      */
-    private void restart(){
-        game = null;
-        deck = null;
-        game = Game.getGame();
+    public void restart(){
+        // return all cards on the table to the deck
+        for(Card card : table){
+            deck.cards.offer(card);
+        }
+
+        // return all cards in player's hand to the deck
+        ArrayList<Player> players1 = new ArrayList<>();
+        for(Player p: players){
+
+            for(int i = 0; i < p.count; i ++){
+                System.out.println(p +" :  card = "+ p.hand[i] +" count " + p.count);
+                deck.cards.offer(new Card(p.hand[i]));
+                p.hand[i] = null;
+            }
+            players1.add(new ComputerPlayer((ComputerPlayer) p));
+        }
+
+
+        deck.shuffle();
+        on = true;
+
+        //game = Game.getGame();
+
+        /*game.table = new LinkedList<>();
+        game.players = new ArrayList<>();
+        game.addAllPlayer(players1);*/
+        if(players == null){
+            System.out.println("Deck is null");
+        }
+
+        if (game == null) {
+
+            System.out.println("Game is null");
+        }
+
 
         game.start();
 
@@ -212,6 +272,8 @@ public class Game {
 
                 if(!isAce){
                     return checkRank(c.rank, cards);
+                }else{
+                    return checkRank(1,cards);
                 }
             }
 
@@ -400,14 +462,44 @@ public class Game {
     }
 
     /**
+     * This subroutine will be called when a player has placed some cards on the table to update the state of the player.
+     * If the player has no more cards on his hand, then if he has placed a winning card update his state to winner if  no player is Card-less
+     * otherwise update to card-less
+     *
+     * @param p the player whose state is to be updated
+     * @param c the last card placed
+     */
+    public void updatePlayerState(Player p, Card c){
+        if(p.count == 0){
+            if(isAWinningCard(c)){
+
+                for(Player p1 : players){
+                    if(p1.state == State.CARDLESS ){
+                        return;
+                    }
+                }
+                p.state = State.WINNER;
+                on = false;
+            }else{
+
+                p.state = State.CARDLESS;
+                //System.out.println(p +": is CARDLESS > > > > > > > > > > > > > > >  ");
+            }
+        }
+    }
+
+    /**
      * If the deck size is less than 5 then transfer all the cards on the table except the first on the deck
      */
     public void updateDeck(){
-        if(deck.getSize() == 0 && table.size() < 3){
 
+        if(deck.getSize() == 0 && table.size() < 3){
+            restart();
+            return;
         }
+
         if(deck.cards.size() < 10){
-            System.out.println("Table size: " + table.size() +" Deck size: " + deck.cards.size());
+            System.out.println("Table size: " + table.size() +" Deck size: " + deck.getSize());
             Card c = table.removeFirst();
 
             for(Card card: table){
@@ -419,48 +511,35 @@ public class Game {
             table = new LinkedList<>();
             table.add(c);
             deck.shuffle();
+            System.out.println("After: Table size: " + table.size() +" Deck size: " + deck.getSize());
         }
     }
 
     /**
-     * declare the winner, if one of the players have won
+     * Declare the winner
      */
     public void declareWinner(){
+        Player winner = null;
+
+        System.out.println("                        ||                     ");
+        System.out.println("                        ||                     ");
+        System.out.println("                        ||                     ");
+        System.out.println("                        \\/                     ");
+        System.out.println("                        \\/                     ");
+
+
         for(Player p: players){
-            System.out.println(p.printHand());
+
             if(p.state == State.WINNER){
-                System.out.println(p.name +" is the winner");
-            }
-        }
-
-    }
-
-    /**
-     * Neatly print the cards that a player has played
-     *
-     * @param p the player that has played
-     * @param cards the cards played by {@param P}
-     */
-    public void printCardsPlayed(Player p, Card [] cards){
-        int n = cards.length;
-
-        System.out.print(p + " : has played - [ ");
-
-        for(int i = 0; i < n; i ++){
-
-            if(i < n - 1){
-                System.out.print(cards[i] +", ");
+                winner = p;
             }else{
-                System.out.print(cards[i]);
+                System.out.println(p +" : was left with "+ Card.revealCards(p.count,p.hand));
             }
         }
-        System.out.println(" ]");
+
+        System.out.println(winner +": is the WINNER ");
 
     }
-
-
-
-
 
     public static void main(String [] args){
 
@@ -470,9 +549,10 @@ public class Game {
             game.addPlayer(new ComputerPlayer(j +" "));
         }
 
+
         game.start();
         System.out.println();
-        System.out.println("Table " + game.table.size());
+        System.out.println("Table " + game.table.size() );//+ "ON TOP " + game.table.getFirst());
         System.out.println("Deck " + game.deck.getSize());
 
     }

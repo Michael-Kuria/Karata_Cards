@@ -18,7 +18,6 @@ public class Card implements Comparable<Card> {
         this.suit = c.suit;
     }
 
-
     @Override
     public String toString(){
         return "["+ value + " of " + suit.toString().toLowerCase() +"]";
@@ -28,4 +27,31 @@ public class Card implements Comparable<Card> {
     public int compareTo(Card o) {
         return ((Integer)rank).compareTo(o.rank);
     }
+
+    /**
+     * Get {@param cards} as a String
+     * @param upto the number of cards to be printed
+     * @param cards an array containing cards
+     *
+     * @return String representation of the cards
+     */
+    public static String revealCards(int upto, Card ... cards){
+
+
+        String str = "[ ";
+        for(int i = 0; i < upto; i ++){
+
+            if(i < upto - 1){
+                str += cards[i] +", ";
+            }else{
+                str += cards[i];
+            }
+        }
+
+
+        return str +" ]";
+    }
+
+
+
 }

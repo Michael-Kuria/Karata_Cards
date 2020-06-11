@@ -9,6 +9,9 @@ public class ComputerPlayer extends Player {
     public ComputerPlayer(String name) {
         super(name);
     }
+    public ComputerPlayer(ComputerPlayer p){
+        super(p.name);
+    }
 
     /**
      * Place one or more card on the table

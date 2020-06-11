@@ -41,6 +41,7 @@ public class Deck {
      */
     public static Deck getDeck(){
         if(deck == null){
+
             deck = new Deck();
         }
         return deck;
