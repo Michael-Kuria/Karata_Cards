@@ -29,18 +29,25 @@ public class HumanPlayer extends Player {
     public Card[] place(Card c, int escape) {
         ArrayList<Integer> x = new ArrayList<>();
 
+        boolean ok = true;
+        while (ok) {
+            char []  n = scan.next().toCharArray();
 
-        while (true) {
-            int n = scan.nextInt();
-            if(n != 99){
-                x.add(n);
-            }else{
-                break;
+            for(int i = 0; i < n.length; i ++){
+                if(Character.toLowerCase(n[i]) == 'q'){
+                    ok = false;
+                }else if(Character.isDigit(n[i])){
+                    x.add(Character.getNumericValue(n[i]));
+                }else{
+                    System.out.println("Please insert numeric values & Q to submit" );
+                    x.clear();
+                    break;
+                }
             }
 
         }
 
-        int[] cards = new int[x.size()];
+        int [] cards = new int[x.size()];
 
         if (x.size() == 0) {
             return null;
