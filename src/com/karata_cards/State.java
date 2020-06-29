@@ -1,5 +1,5 @@
 package com.karata_cards;
 
 public enum State {
-    CARDLESS, CARD, WINNER,PlAYING
+    CARDLESS, CARD, WINNER, PLAYING
 }

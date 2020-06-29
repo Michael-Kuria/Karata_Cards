@@ -7,10 +7,10 @@ public class ComputerPlayer extends Player {
 
 
     public ComputerPlayer(String name) {
-        super(name);
+        super(name, 0);
     }
     public ComputerPlayer(ComputerPlayer p){
-        super(p.name);
+        super(p.name, p.id);
     }
 
     /**
@@ -125,14 +125,7 @@ public class ComputerPlayer extends Player {
 
 
                         if (c.suit == hand[i].suit) {
-                            if(hand[i].rank == 11){
-                                /*System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-*/
 
-                            }
 
                             list.addLast(i);
                             int k = i + 1;
@@ -208,50 +201,13 @@ public class ComputerPlayer extends Player {
 
 
 
+
+
     @Override
     public Card place(Card c) {
         sort();
 
-       /* if(c.rank == 2 || c.rank == 3){
-            int a = this.findByRank(c.rank);
 
-            if(a == -1){
-                a = this.findByRank(1);
-                if(a == -1){
-                    this.pick(c.rank);
-                    return null;
-                }
-            }
-
-            return place(a);
-        }
-
-        *//*if(c.rank == 11){
-            int a = this.findByRank(c.rank);
-
-            if(a == -1){
-                return null;
-            }
-
-            return place(a);
-        }*//*
-
-
-        int a = findByRank(c.rank);
-
-        if(a == -1){
-
-            for(int i = 0; i < count; i ++){
-                if(hand[i].suit == c.suit){
-                    return  place(i);
-                }
-            }
-        }else{
-            return place(a);
-        }
-
-
-        pick();*/
         return null;
     }
 

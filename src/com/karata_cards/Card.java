@@ -1,5 +1,14 @@
 package com.karata_cards;
 
+/**
+ * CARDS Value and rank
+ *
+ * Value => A    2   3   4   5   6   7   8   9   10  J   K   Q
+ * Rank =>  1   2   3   4   5   6   7   8   9   10  11  12  13
+ *
+ *
+ */
+
 public class Card implements Comparable<Card> {
 
     public Suit suit;

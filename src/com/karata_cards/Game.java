@@ -67,6 +67,12 @@ public class Game {
 
             for(Player p : players){
 
+                if(p.id == 1){
+                    System.out.println();
+                    System.out.println( " The card on top  "+ table.peekFirst());
+                    System.out.println(Card.revealCards(p.count, p.hand));
+                }
+
                 Card[] cards = p.place(c,escape);
 
                 if(cards == null){
@@ -78,12 +84,12 @@ public class Game {
 
                     }else if((c.rank == 2 || c.rank == 3) && escape == 1){
                         p.pick(c.rank);
-                        System.out.println(p + ": --------> has picked " +c.rank);
+                        System.out.println(p + " : -> has picked " +c.rank);
                     } else if(c.rank == 11 && escape == 1){
-                        System.out.println(p +": --------> has been Jumped");
+                        System.out.println(p + " : -> has been Jumped");
                     }else{
                         p.pick();
-                        System.out.println(p +": ---> was unable to play " + Card.revealCards(p.count,p.hand));
+                        System.out.println(p + " : -> was unable to play " + Card.revealCards(p.count,p.hand));
                     }
 
                     if(escape == 1){
@@ -241,7 +247,7 @@ public class Game {
 
 
     /**
-     * Check if the player has played correctly according to the game rules i.e if at all he has placed a card on the table
+     * Check if the player has played correctly according to the game rules. The function is called when {@param cards} is not null
      *
      * @param cards the set of cards that the player has placed on the table, this can never be null
      * @param c the card that was already on the table.
@@ -386,7 +392,7 @@ public class Game {
 
 
     /**
-     *  {J,K,2,3} are sets of cards that an opponent will have to react.
+     *  {J,K,2,3} are sets of cards that an opponent will have to react to.
      *
      * @param c Card that we are whether it is a reaction Card
      * @return true if it's special and false otherwise
@@ -537,7 +543,7 @@ public class Game {
             }
         }
 
-        System.out.println(winner +": is the WINNER ");
+        System.out.println(winner +" : is the WINNER ");
 
     }
 
@@ -545,10 +551,11 @@ public class Game {
 
         Game game = new Game();
 
-        for(int j = 1; j < 4; j ++ ){
+        for(int j = 1; j < 3; j ++ ){
             game.addPlayer(new ComputerPlayer(j +" "));
-        }
 
+        }
+        game.addPlayer(new HumanPlayer("Michael"));
 
         game.start();
         System.out.println();

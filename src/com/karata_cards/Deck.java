@@ -5,6 +5,8 @@ import java.util.Queue;
 
 /**
  * Handles creation of a deck, shuffling the cards and dealing cards to the player
+ *
+ *
  */
 public class Deck {
 
@@ -91,9 +93,6 @@ public class Deck {
 
         for(int j = 0; j < i; j ++){
 
-            /*if(arr[j] == null){
-                System.out.println(j +" is null during shuffling >>>>>>>>>>>>>>");
-            }*/
             cards.offer(arr[j]);
         }
     }

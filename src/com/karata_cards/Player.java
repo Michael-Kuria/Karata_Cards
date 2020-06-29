@@ -7,19 +7,21 @@ public abstract class Player {
     public String name;
     public int count;
     public State state;
+    public int id; // indicates whether the player is a human or a computer
 
 
     Deck deck = Deck.getDeck();
 
-    public Player(String name){
+    public Player(String name, int id){
         this.name = name;
         hand = new Card[50];
-        state = State.PlAYING;
+        state = State.PLAYING;
         count = 0;
+        this.id = id;
     }
 
     public Player(Player p){
-        this(p.name);
+        this(p.name, p.id);
     }
 
 
@@ -28,7 +30,7 @@ public abstract class Player {
      */
     public void pick(){
         if(state == State.CARDLESS){
-            state = State.PlAYING;
+            state = State.PLAYING;
         }
 
         hand[count] = deck.deal();
@@ -44,7 +46,7 @@ public abstract class Player {
 
     public void pick(int a){
         if(state == State.CARDLESS){
-            state = State.PlAYING;
+            state = State.PLAYING;
         }
 
         for(int i = 0; i < a; i ++){
