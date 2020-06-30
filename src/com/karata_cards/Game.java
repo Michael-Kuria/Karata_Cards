@@ -52,12 +52,16 @@ public class Game {
     }
 
     public void start(){
-
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NOTE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println("For human player insert the indices of the cards you want to play (in the order you want to play them), separated with space ");
+        System.out.println("If you have selected your cards or do not have a card to play with, append a Q and hit enter.");
+        System.out.println("__________________________________________________________________________________________________");
+        System.out.println("__________________________________________________________________________________________________");
         initializeGame();
         Card c = table.getFirst();
 
         System.out.println("First Card : " + c);
-        System.out.println("Number of players =" + players.size());
+
         boolean playersAreAvailable = players.size() > 1;
 
 

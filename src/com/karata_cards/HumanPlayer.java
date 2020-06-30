@@ -31,17 +31,21 @@ public class HumanPlayer extends Player {
 
         boolean ok = true;
         while (ok) {
-            char []  n = scan.next().toCharArray();
+            String []  n = scan.next().split(" ");
 
             for(int i = 0; i < n.length; i ++){
-                if(Character.toLowerCase(n[i]) == 'q'){
+                if(n[i].toLowerCase().equals("q")){
                     ok = false;
-                }else if(Character.isDigit(n[i])){
-                    x.add(Character.getNumericValue(n[i]));
                 }else{
-                    System.out.println("Please insert numeric values & Q to submit" );
-                    x.clear();
-                    break;
+                    try{
+                        int y = Integer.parseInt(n[i]);
+                        x.add(y);
+                    }catch (IllegalArgumentException e){
+                        System.out.println("Please insert numeric values & Q to submit" );
+                        x.clear();
+                        break;
+                    }
+
                 }
             }
 
